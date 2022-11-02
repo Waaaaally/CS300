@@ -1,0 +1,121 @@
+; Your Name: Pritish Das
+; Partner's Name (if any):
+; (Both partner's must also submit a partners.txt file.)
+; Date:5/4/22
+;
+; Mark the boxes below [ ] by replacing the space with an X as in [X]
+;
+; [X] I/we certify that the code herein is my/our own authorship -
+;     I/we have not used anyone else's code (in whole of in part) for
+;     my/our modifications, and I/we have not shared my/our code in
+;     any form with anyone else.
+;
+; Complete the subroutines in the following order.
+; Mark which subroutine(s) you've successfully completed.
+; [X] 1. subroutine MUL3ADD1 completed
+; [X] 2. subroutine DIVIDEBY2 completed
+; [X] 3. subroutine COLLATZ_STEPS completed
+;
+; -----------------------------------------------------
+; Copyright (c) 2022 Jim Skrentny - All Rights Reserved
+; Posting this publicly is prohibited.
+; -----------------------------------------------------
+;
+    .ORIG    x3000
+    JSR COLLATZ_STEPS
+    HALT
+;
+; STEP 1: MUL3ADD1
+; ****************
+; Subroutine that multiplies a positive integer A by 3 adds 1 to it.
+;
+; arguments:    in R0 is A
+; return value: in R1 will be (A * 3) + 1
+;
+MUL3ADD1
+; ************************* Start your code here *************************
+M3A1   ST  R0, M3A1R0
+       ST  R7, RETADR
+       AND R1, R1, #0; Initialize R1
+       ADD R1, R1, R0; Mimic x3 by adding same thing 3 times
+       ADD R1, R1, R0
+       ADD R1, R1, R0
+       ADD R1, R1, #1; +1 part of algo
+       LD  R0, M3A1R0
+       LD  R7, RETADR
+       RET
+M3A1R0 .BLKW #1
+RETADR .BLKW #1
+; ************************** End your code here **************************
+
+;
+; STEP 2: DIVIDEBY2
+; *****************
+; Subroutine that calculates N / 2 for even N
+;
+; argument:     in R0 is N, a positive integer
+; return value: in R1 will be N / 2
+;
+DIVIDEBY2
+; ************************* Start your code here *************************
+DIV2   ST  R0, DIV2R0
+       ST  R7, DIVRET
+       AND R1, R1, #0
+       ADD R0, R0, #0
+dLOOP  BRz EXIT; -2 until we hit 0
+       ADD R1, R1, #1; Increment by 1 for every -2
+       ADD R0, R0, #-2
+       BRnzp dLOOP
+EXIT   LD R0, DIV2R0
+       LD R7, DIVRET
+       RET
+DIV2R0 .BLKW #1
+DIVRET .BLKW #1
+; ************************** End your code here **************************
+
+;
+; STEP 3: COLLATZ_STEPS
+; *********************
+; Subroutine to calculate the number of steps to reach 1 from number N
+;
+; argument:     in R0 is N, a positive integer
+; return value: in R1 will be the required number of steps
+;
+COLLATZ_STEPS
+; ************************* Start your code here *************************
+COLST    ST R7, COLRET; Saving exit return memLoc
+	 ST R0, COLSTR0
+	 ST R2, COLSTR2
+	 ST R3, COLSTR3
+	 ST R4, COLSTR4
+	 ;ST R1, COUNTER; Saving counter in Memory
+
+	 AND R1, R1, #0
+	 AND R2, R2, #0
+	 ADD R2, R2, #-1; For Compare
+CHK      ADD R3, R0, R2
+	 BRz END; If we reach R0 = 1. Finish SR
+	 AND R4, R0, #1
+	 BRz EvenT; Go to Div2SR Call (Event for Even, haha pun)
+	 JSR M3A1; Because odd, we call M3A1
+	 BRnzp INC; go to increment R1
+EvenT    JSR DIV2
+INC	 ADD R0, R1, #0; UPDATE N
+	 LD  R1, COUNTER;
+	 ADD R1, R1, #1
+	 ST  R1, COUNTER
+	 BRnzp CHK
+END      LD R7, COLRET
+	  LD R0, COLSTR0
+	 ;LD R1, COUNTER
+	  LD R2, COLSTR2
+	  LD R3, COLSTR3
+	  LD R4, COLSTR4
+         RET
+COLRET  .BLKW #1
+COUNTER .BLKW #1
+COLSTR0 .BLKW #1
+COLSTR2 .BLKW #1
+COLSTR3 .BLKW #1
+COLSTR4 .BLKW #1
+.END

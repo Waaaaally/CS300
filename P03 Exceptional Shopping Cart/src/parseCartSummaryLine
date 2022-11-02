@@ -1,0 +1,57 @@
+String trimmedLine = null;
+        String[] splitUpLine = null;
+        String[] splitCopy = null;
+        String itemName = "";
+        boolean contains = false;
+        boolean formatting = false;
+        int occurences = 0;
+
+        if(line != null){
+            trimmedLine = line.trim();
+            splitUpLine = line.split(" ");
+            splitCopy = new String[10];
+
+            for(int i = 0; i < splitUpLine.length; i++){
+                splitCopy[i] = splitUpLine[i];
+            }
+
+            itemName = splitCopy[3]; //item name should be last index
+        }
+        //
+        // throws DataFormatException with descriptive error message if wrong formatting (including
+        // nbOccurrences not parsable to a positive integer less or equal to 10)
+        if(splitUpLine.length != 4){
+            formatting = true;
+        }
+        if(!splitCopy[0].equals("(") || !splitCopy[2].equals(")")){
+            formatting = true;
+        }
+        try{
+            occurences = Integer.parseInt(splitCopy[1]); //checking if int is okay
+        } catch (NumberFormatException e) {
+            formatting = true;}
+
+        for(int i = 0; i < marketItems.length; i++){
+            if(marketItems[i] != null && marketItems[i][1].equals(itemName)){
+                    contains = true;
+            }
+        }
+
+        if(contains == false || formatting == true){
+            return size;
+        }
+//        if(itemName != null && contains == false){
+//            throw new IllegalArgumentException("Not found in market items array");
+//        }
+
+        if (occurences > 10 || occurences < 0){
+            throw new IllegalArgumentException("Negative occurences or 10+ found");
+        }
+
+
+        for(int i = 0; i < occurences; i++){
+            if(cart != null && size == cart.length){
+                throw new IllegalStateException("Cart has reached its capacity already");
+            }
+            size = addItemToCart(itemName, cart, size);
+        }
